@@ -1,4 +1,4 @@
-package com.mobile.myapplication;
+package com.mobile.guarantee;
 
 import org.junit.Test;
 
