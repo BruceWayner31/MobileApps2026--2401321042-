@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    namespace = "com.mobile.myapplication"
+    namespace = "com.mobile.guarantee"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.mobile.myapplication"
+        applicationId = "com.mobile.guarantee"
         minSdk = 24
         targetSdk = 37
         versionCode = 1
