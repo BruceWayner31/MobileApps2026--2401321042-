@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -42,7 +43,10 @@ public class ProductListFragment extends Fragment {
         FloatingActionButton fab = view.findViewById(R.id.fabAdd);
 
         ProductAdapter adapter = new ProductAdapter(product -> {
-            // TODO: open edit screen
+            Bundle args = new Bundle();
+            args.putLong("productId", product.id);
+            NavHostFragment.findNavController(this)
+                    .navigate(R.id.addEditProductFragment, args);
         });
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         recycler.setAdapter(adapter);
@@ -54,15 +58,7 @@ public class ProductListFragment extends Fragment {
 
         // Temporary: adds a sample product so we can test the list.
         // It will be replaced by navigation to the add screen.
-        fab.setOnClickListener(v -> {
-            Product p = new Product();
-            p.name = "Test product";
-            p.store = "Test store";
-            p.purchaseDate = System.currentTimeMillis();
-            p.warrantyEndDate = System.currentTimeMillis()
-                    + TimeUnit.DAYS.toMillis(60);
-            p.price = 100;
-            viewModel.insert(p);
-        });
+        fab.setOnClickListener(v -> NavHostFragment.findNavController(this)
+                .navigate(R.id.addEditProductFragment));
     }
 }

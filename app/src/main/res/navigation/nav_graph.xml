@@ -8,4 +8,8 @@
         android:id="@+id/productListFragment"
         android:name="com.mobile.guarantee.ui.ProductListFragment"
         android:label="Guarantee" />
+    <fragment
+        android:id="@+id/addEditProductFragment"
+        android:name="com.mobile.guarantee.ui.AddEditProductFragment"
+        android:label="Add product" />
 </navigation>
