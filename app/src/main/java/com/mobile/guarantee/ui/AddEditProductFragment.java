@@ -18,6 +18,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.mobile.guarantee.R;
 import com.mobile.guarantee.data.Product;
 
+import android.widget.Toast;
+
+import com.google.mlkit.vision.barcode.common.Barcode;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanner;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions;
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning;
+
 import java.text.DateFormat;
 import java.util.concurrent.TimeUnit;
 import java.util.function.LongConsumer;
@@ -38,6 +45,7 @@ public class AddEditProductFragment extends Fragment {
     private TextInputEditText inputPurchaseDate;
     private TextInputEditText inputWarrantyEnd;
     private TextInputEditText inputPrice;
+    private TextInputEditText inputBarcode;
 
     @Nullable
     @Override
@@ -60,6 +68,9 @@ public class AddEditProductFragment extends Fragment {
         inputPurchaseDate = view.findViewById(R.id.inputPurchaseDate);
         inputWarrantyEnd = view.findViewById(R.id.inputWarrantyEnd);
         inputPrice = view.findViewById(R.id.inputPrice);
+        inputBarcode = view.findViewById(R.id.inputBarcode);
+        MaterialButton buttonScan = view.findViewById(R.id.buttonScan);
+        buttonScan.setOnClickListener(v -> scanBarcode());
         MaterialButton buttonSave = view.findViewById(R.id.buttonSave);
         MaterialButton buttonDelete = view.findViewById(R.id.buttonDelete);
 
@@ -86,6 +97,7 @@ public class AddEditProductFragment extends Fragment {
                 inputName.setText(product.name);
                 inputStore.setText(product.store);
                 inputPrice.setText(String.valueOf(product.price));
+                inputBarcode.setText(product.barcode == null ? "" : product.barcode);
                 purchaseDate = product.purchaseDate;
                 warrantyEnd = product.warrantyEndDate;
                 showDates();
@@ -147,6 +159,9 @@ public class AddEditProductFragment extends Fragment {
         product.purchaseDate = purchaseDate;
         product.warrantyEndDate = warrantyEnd;
         product.price = price;
+        String barcode = inputBarcode.getText() == null
+                ? "" : inputBarcode.getText().toString().trim();
+        product.barcode = barcode.isEmpty() ? null : barcode;
 
         if (editing != null) {
             viewModel.update(product);
@@ -154,5 +169,21 @@ public class AddEditProductFragment extends Fragment {
             viewModel.insert(product);
         }
         NavHostFragment.findNavController(this).navigateUp();
+    }
+    private void scanBarcode() {
+        GmsBarcodeScannerOptions options = new GmsBarcodeScannerOptions.Builder()
+                .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
+                .build();
+        GmsBarcodeScanner scanner = GmsBarcodeScanning.getClient(requireContext(), options);
+
+        scanner.startScan()
+                .addOnSuccessListener(barcode -> {
+                    String value = barcode.getRawValue();
+                    if (value != null) {
+                        inputBarcode.setText(value);
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(requireContext(),
+                        "Scan failed: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 }
